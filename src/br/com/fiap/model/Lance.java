@@ -55,7 +55,6 @@ public class Lance implements Comparable<Lance>{
 
 	@Override
 	public int compareTo(Lance outroLance) {
-		this.getData().compareTo(outroLance.getData());
 		return (this.getValor() < outroLance.getValor()? -1 :
 			(this.getValor() > outroLance.getValor()? 1 : 
 				outroLance.getData().compareTo(this.getData())));

@@ -173,7 +173,7 @@ public class Leilao {
 				File file = fileChooser.getSelectedFile();
 				FileWriter fw = new FileWriter(file);
 				PrintWriter out = new PrintWriter(fw);
-				resumo.forEach(l -> out.write(l));
+				resumo.forEach(l -> out.write(l+"\n"));
 				out.flush();
 				out.close();				
 			} catch (Exception e) {
