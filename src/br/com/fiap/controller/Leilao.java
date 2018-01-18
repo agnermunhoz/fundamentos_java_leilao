@@ -45,7 +45,7 @@ public class Leilao {
 			//API: Collections
 			lances = new ArrayList<Lance>();
 			// Inicial Leilão
-			tl = new TelaLeilao(item.getDescricao()) {
+			tl = new TelaLeilao(item) {
 
 				@Override
 				public void darLanceButtonClick() {
@@ -105,7 +105,8 @@ public class Leilao {
 		if (vencedor == null) {
 			resumo.add("Não houve lance vencedor!");
 		} else {
-			resumo.add("Lance vencedor: "+vencedor.toString());
+			resumo.add("Lance vencedor:");
+			resumo.add(vencedor.toString());
 		}
 		resumo.add("");
 		resumo.add("Lances válidos:");
@@ -137,7 +138,7 @@ public class Leilao {
 	private void darLance() {
 		TelaLance telaLance = new TelaLance();
 		if (telaLance.efetuarLance()) {
-			duracao = (duracao < 10 ? 10: duracao);
+			duracao = (duracao < 20 ? 20: duracao);
 			Lance lance = new Lance(telaLance.getCompetidor(), telaLance.getLance());
 			addLance(lance);
 			System.out.println(lance.toString());
@@ -153,7 +154,7 @@ public class Leilao {
 
 		Lance vencedor = getVencedor();
 		if (vencedor != null) {
-			tl.setVencedor(vencedor.getCompetidor());
+			tl.setVencedor(vencedor);
 		}
 	}
 

@@ -3,8 +3,11 @@ package br.com.fiap.view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -14,6 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
+import br.com.fiap.model.Item;
 import br.com.fiap.model.Lance;
 
 public abstract class TelaLeilao extends JFrame {
@@ -23,34 +27,50 @@ public abstract class TelaLeilao extends JFrame {
 	private JLabel lblCronometro;
 	private JTextArea taHistorico;
 	private JLabel lblVencedor;
-
-	public TelaLeilao(String itemLeilao) {
+	private JLabel lblLanceVencedor;
+	private NumberFormat formatter = new DecimalFormat("#0.00");
+	
+	private JLabel createLabelInfo(String text) {
+		JLabel label = new JLabel(text);
+		label.setFont(new Font(Font.SERIF, Font.BOLD, 15));
+		//label.setBorder(BorderFactory.createBevelBorder(1));
+		label.setBorder(BorderFactory.createLoweredBevelBorder());
+		return label;
+	}
+	
+	public TelaLeilao(Item item) {
 		setLayout(new BorderLayout());
 		setSize(500, 375);
 		setTitle("Leilão");
 
 		JPanel panelMain = new JPanel();
-		panelMain.setLayout(new BorderLayout());
+		panelMain.setLayout(new GridLayout(0,2));
+		panelMain.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		this.getContentPane().add(panelMain, BorderLayout.NORTH);
 		
-		JPanel panelInfo = new JPanel();
-		panelInfo.setSize(500, 200);
-		panelInfo.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-		panelMain.add(panelInfo, BorderLayout.CENTER);
-		panelInfo.setLayout(new BorderLayout());
-		JLabel lblItem = new JLabel(itemLeilao);
-		lblItem.setFont(new Font(Font.SERIF, Font.BOLD, 25));
-		lblItem.setHorizontalAlignment(SwingConstants.CENTER);
-		panelInfo.add(lblItem, BorderLayout.CENTER);
-		lblCronometro = new JLabel("00:00");
-		lblCronometro.setFont(new Font(Font.MONOSPACED, Font.BOLD, 40));
-		lblCronometro.setForeground(Color.RED);
-		panelInfo.add(lblCronometro, BorderLayout.EAST);
+		Font font = new Font(Font.SERIF, Font.BOLD, 15);
 		
-		JPanel panelControl = new JPanel();
-		panelMain.add(panelControl, BorderLayout.SOUTH);
-		panelControl.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-		panelControl.setLayout(new BorderLayout());
+		panelMain.add(new JLabel("Item do Leilão:"));
+		panelMain.add(createLabelInfo(item.getDescricao()));
+		
+		panelMain.add(new JLabel("Lance Mínimo:"));
+		panelMain.add(createLabelInfo(formatter.format(item.getValorMinimo())));
+		
+		panelMain.add(new JLabel("Vencedor:"));
+		lblVencedor = createLabelInfo("");
+
+		panelMain.add(lblVencedor);
+		panelMain.add(new JLabel("Lance Vencedor:"));
+		lblLanceVencedor = createLabelInfo("");
+		panelMain.add(lblLanceVencedor);
+		
+		lblCronometro = new JLabel("00:00");
+		lblCronometro.setBorder(BorderFactory.createBevelBorder(1));
+		lblCronometro.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
+		lblCronometro.setForeground(Color.BLACK);
+		lblCronometro.setHorizontalAlignment(SwingConstants.CENTER);
+		panelMain.add(lblCronometro);
+		
 		JButton buttonLance = new JButton("Dar Lance");
 		buttonLance.addActionListener(new ActionListener() {
 			
@@ -61,17 +81,13 @@ public abstract class TelaLeilao extends JFrame {
 			}
 
 		});
-		panelControl.add(buttonLance, BorderLayout.EAST);
-		lblVencedor = new JLabel();
-		lblVencedor.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
-		lblVencedor.setForeground(Color.BLUE);
-		panelControl.add(lblVencedor, BorderLayout.CENTER);
+		panelMain.add(buttonLance);
 		
 		JPanel panelHistorico = new JPanel();		
 		this.getContentPane().add(panelHistorico, BorderLayout.CENTER);
 		panelHistorico.setSize(500, 200);
 		panelHistorico.setLayout(new BorderLayout());
-		panelHistorico.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		panelHistorico.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		panelHistorico.add(new JLabel("Histórioco de lances"), BorderLayout.NORTH);
 		taHistorico = new JTextArea();
 		taHistorico.setSize(500, 300);
@@ -79,27 +95,20 @@ public abstract class TelaLeilao extends JFrame {
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
-		//setVisible(true);
 	}
 
-	/*
-	protected void darLance() {
-		TelaLance dadosLance = new TelaLance();
-		if (dadosLance.efetuarLance()) {
-			System.out.println(dadosLance.getCompetidor()+ " " + dadosLance.getLance());
-		}
-	}
-	*/
 	public abstract void darLanceButtonClick();
 	
 	public void setDuracao(int segundos) {
+		lblCronometro.setForeground(segundos <= 20? Color.RED : Color.BLACK);
 		int minutos = segundos / 60;
 		segundos = segundos % 60;
 		lblCronometro.setText(String.format("%02d:%02d", minutos, segundos));
 	}
 	
-	public void setVencedor(String vencedor) {
-		lblVencedor.setText(vencedor);
+	public void setVencedor(Lance lance) {
+		lblVencedor.setText(lance.getCompetidor());
+		lblLanceVencedor.setText(formatter.format(lance.getValor()));
 	}
 	
 	public void addLanceHistorico(Lance lance) {
